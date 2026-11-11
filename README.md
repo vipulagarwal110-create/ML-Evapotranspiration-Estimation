@@ -91,21 +91,20 @@ $$ET_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e_s - e_
 │   ├── raw/
 │   │   ├── nasa_power_hisar_2010_2023.json       # Raw NASA POWER API JSON response
 │   │   └── raw_weather_data.csv                  # Direct unaltered raw CSV
-├── src/
+│   └── evapotranspiration_dataset_with_ET0.csv   # Clean ML-ready dataset with ground-truth ET0
+├── reports/
+│   ├── Project_Progress_Report_2_Pages.pdf       # 2-Page student progress report
+│   └── Phase_1_and_2_Detailed_Report.pdf         # Comprehensive technical report
+├── src/                                          # Reusable Python modules
 │   ├── __init__.py
 │   ├── data_fetcher.py                           # Automated NASA POWER API query module
 │   ├── et0_calculator.py                         # FAO-56 Penman-Monteith physical calculator
 │   └── preprocessor.py                           # Cleaning, missing-value audit & formatting
-├── evapotranspiration_dataset_with_ET0.csv       # Clean ML-ready dataset with ground-truth ET0
 ├── evapotranspiration_fao56_calculation.ipynb    # Kaggle-ready notebook (Phase 1 & Phase 2)
 ├── evapotranspiration_estimation_complete.ipynb  # End-to-end master notebook with ML models
 ├── fetch_and_prepare_data.py                     # Pipeline execution script
-├── generate_notebook.py                          # Notebook generation script
-├── generate_pdf_report.py                        # 2-Page progress report compiler
-├── generate_phase1_2_report.py                   # Detailed technical report compiler
-├── Project_Progress_Report_2_Pages.pdf           # 2-Page progress report document
-├── Phase_1_and_2_Detailed_Report.pdf             # Comprehensive technical report
 ├── requirements.txt                              # Python environment dependencies
+├── LICENSE                                       # MIT License
 └── README.md                                     # Project documentation
 ```
 
