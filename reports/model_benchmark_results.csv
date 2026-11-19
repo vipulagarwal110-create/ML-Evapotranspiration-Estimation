@@ -1,0 +1,13 @@
+Configuration,Model,Input Features,MAE (mm/day),RMSE (mm/day),R2 Score
+Config 1 (Temp Only),Linear Regression,"max_temp, min_temp",0.763,0.997,0.797
+Config 1 (Temp Only),Support Vector Regression (SVR),"max_temp, min_temp",0.647,0.873,0.844
+Config 1 (Temp Only),Random Forest,"max_temp, min_temp",0.705,0.946,0.817
+Config 2 (Temp + Humidity),Linear Regression,"max_temp, min_temp, relative_humidity",0.708,0.929,0.823
+Config 2 (Temp + Humidity),Support Vector Regression (SVR),"max_temp, min_temp, relative_humidity",0.63,0.852,0.852
+Config 2 (Temp + Humidity),Random Forest,"max_temp, min_temp, relative_humidity",0.673,0.907,0.832
+Config 3 (Temp + Humidity + Wind),Linear Regression,"max_temp, min_temp, relative_humidity, wind_speed",0.498,0.662,0.91
+Config 3 (Temp + Humidity + Wind),Support Vector Regression (SVR),"max_temp, min_temp, relative_humidity, wind_speed",0.354,0.478,0.953
+Config 3 (Temp + Humidity + Wind),Random Forest,"max_temp, min_temp, relative_humidity, wind_speed",0.384,0.501,0.949
+Config 4 (Full Inputs - Upper Bound),Linear Regression,"max_temp, min_temp, relative_humidity, wind_speed, solar_radiation",0.342,0.501,0.949
+Config 4 (Full Inputs - Upper Bound),Support Vector Regression (SVR),"max_temp, min_temp, relative_humidity, wind_speed, solar_radiation",0.079,0.108,0.998
+Config 4 (Full Inputs - Upper Bound),Random Forest,"max_temp, min_temp, relative_humidity, wind_speed, solar_radiation",0.172,0.233,0.989

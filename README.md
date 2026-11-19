@@ -61,7 +61,7 @@ $$ET_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e_s - e_
 
 ---
 
-## 🤖 4. Machine Learning Experimental Design
+## 🤖 4. Machine Learning Experimental Design & Phase 3 Results
 
 ### Reduced-Input Feature Configurations Evaluated
 
@@ -72,15 +72,39 @@ $$ET_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e_s - e_
 | **Config 3: Temp + RH + Wind** | `max_temp`, `min_temp`, `relative_humidity`, `wind_speed` | Moderate-cost station ($\approx \$60$) |
 | **Upper Bound Benchmark** | All weather variables + Solar Radiation | Complete station with pyranometer ($>\$1,500$) |
 
-### Algorithms
+### Algorithms & Training Strategy
 * **Linear Regression:** Baseline parametric reference.
-* **Support Vector Regression (SVR):** Non-linear kernel regression (RBF kernel).
-* **Random Forest Regressor:** Primary ensemble learning model (provides Gini feature importance rankings).
+* **Support Vector Regression (SVR):** Non-linear kernel regression (RBF kernel, standardized inputs).
+* **Random Forest Regressor:** Primary ensemble learning model (150 estimators, max depth 12).
+* **Data Split:** Chronological 80/20 train/test split (Train: 4,090 days [2010–2021], Test: 1,023 unseen days [2021–2023]) to prevent lookahead data leakage.
 
-### Evaluation Metrics
-* **MAE:** Mean Absolute Error ($\text{mm/day}$)
-* **RMSE:** Root Mean Squared Error ($\text{mm/day}$)
-* **$R^2$:** Coefficient of Determination ($0$ to $1$)
+### 🏆 Phase 3 Experimental Benchmark Results (1,023 Unseen Test Days)
+
+| Configuration | Model Architecture | MAE (mm/day) | RMSE (mm/day) | $R^2$ Score | Accuracy Assessment |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Config 1 (Temp Only)** | Linear Regression | 0.763 | 0.997 | 0.797 | Reasonable seasonal baseline |
+| **Config 1 (Temp Only)** | Random Forest | 0.705 | 0.946 | 0.817 | Captures non-linear summer extremes |
+| **Config 1 (Temp Only)** | Support Vector Regression (SVR) | 0.647 | 0.873 | 0.844 | Best temperature-only model |
+| **Config 2 (Temp + RH)** | Linear Regression | 0.708 | 0.929 | 0.823 | Accounts for vapor deficit damping |
+| **Config 2 (Temp + RH)** | Random Forest | 0.673 | 0.907 | 0.832 | Robust across seasonal shifts |
+| **Config 2 (Temp + RH)** | Support Vector Regression (SVR) | 0.630 | 0.852 | 0.852 | Smooth non-linear humidity fit |
+| **Config 3 (Temp + RH + Wind)** | Linear Regression | 0.498 | 0.662 | 0.910 | High precision linear approximation |
+| **Config 3 (Temp + RH + Wind)** | **Random Forest Regressor** | **0.384** | **0.501** | **0.949** | **Near-ideal crop water prediction** |
+| **Config 3 (Temp + RH + Wind)** | **Support Vector Regression (SVR)** | **0.354** | **0.478** | **0.953** | **Overall Best Model ($\mathbf{R^2 = 0.953}$)** |
+| *Config 4 (Full Upper Bound)* | *Linear Regression* | *0.342* | *0.501* | *0.949* | *Upper bound reference* |
+| *Config 4 (Full Upper Bound)* | *Random Forest Regressor* | *0.172* | *0.233* | *0.989* | *Ideal station with pyranometer* |
+| *Config 4 (Full Upper Bound)* | *Support Vector Regression (SVR)* | *0.079* | *0.108* | *0.998* | *Theoretical ceiling* |
+
+### 🌲 Random Forest Feature Importance Analysis
+Gini impurity reduction from the 150-tree ensemble trained on Configuration 3:
+* **Maximum Temperature (`max_temp`):** **`82.43%`** — Overwhelming thermal driver expanding atmospheric vapor capacity.
+* **Wind Speed (`wind_speed`):** **`12.89%`** — Essential aerodynamic vapor transport stripping humid crop boundary layers.
+* **Relative Humidity (`relative_humidity`):** **`3.82%`** — Modulates vapor pressure deficit.
+* **Minimum Temperature (`min_temp`):** **`0.86%`** — Nighttime temperature baseline.
+
+### 💡 Core Research Conclusion
+> **Can ML estimate $ET_0$ accurately using fewer variables than FAO-56?**  
+> **Yes.** Configuration 3 (Temperature + Humidity + Wind Speed) achieves **$R^2 = 0.953$ and $\text{RMSE} = 0.478\,\text{mm/day}$**, capturing over 95% of evapotranspiration variance without solar radiation sensors. This allows farm irrigation systems to eliminate expensive pyranometers ($>\$1,500$ USD) while maintaining high precision.
 
 ---
 
@@ -93,8 +117,15 @@ $$ET_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e_s - e_
 │   │   └── raw_weather_data.csv                  # Direct unaltered raw CSV
 │   └── evapotranspiration_dataset_with_ET0.csv   # Clean ML-ready dataset with ground-truth ET0
 ├── reports/
-│   ├── Project_Progress_Report_2_Pages.pdf       # 2-Page student progress report
-│   └── Phase_1_and_2_Detailed_Report.pdf         # Comprehensive technical report
+│   ├── figures/                                  # High-resolution evaluation charts
+│   │   ├── feature_importance.png                # RF Gini feature importance bar chart
+│   │   ├── model_comparison_metrics.png          # Side-by-side R2 & RMSE benchmark chart
+│   │   ├── predicted_vs_actual_scatter.png       # 1:1 scatter plots across configs
+│   │   └── timeseries_prediction_overlay.png     # Actual vs. Predicted time series (2023)
+│   ├── model_benchmark_results.csv               # Complete CSV of all 12 model evaluations
+│   ├── Phase_3_Model_Evaluation_Report.pdf       # Phase 3 technical benchmark report
+│   ├── Phase_1_and_2_Detailed_Report.pdf         # Comprehensive Phase 1 & 2 technical report
+│   └── Project_Progress_Report_2_Pages.pdf       # 2-Page student progress report
 ├── src/                                          # Reusable Python modules
 │   ├── __init__.py
 │   ├── data_fetcher.py                           # Automated NASA POWER API query module
@@ -102,7 +133,8 @@ $$ET_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e_s - e_
 │   └── preprocessor.py                           # Cleaning, missing-value audit & formatting
 ├── evapotranspiration_fao56_calculation.ipynb    # Kaggle-ready notebook (Phase 1 & Phase 2)
 ├── evapotranspiration_estimation_complete.ipynb  # End-to-end master notebook with ML models
-├── fetch_and_prepare_data.py                     # Pipeline execution script
+├── fetch_and_prepare_data.py                     # Data extraction and target generation script
+├── train_models.py                               # Phase 3 model training & evaluation engine
 ├── requirements.txt                              # Python environment dependencies
 ├── LICENSE                                       # MIT License
 └── README.md                                     # Project documentation
